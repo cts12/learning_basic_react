@@ -1,11 +1,24 @@
+var webpack = require('webpack')
+var path = require('path')
+
+
 module.exports = {
-		entry:'./main.js',
+		devtool: 'inline-source-map',
+		entry: [
+				//'webpack-dev-server/client?http://177.0.0.1:8080/',
+				'./todosrc'
+		],
 		output: {
-			path: './',
-			filename: 'index.js'
+			path: path.join(__dirname, 'public'),
+			filename: 'bundle.js'
+		},
+		resolve: {
+			modulesDirectories: ['node_modules', 'todosrc'],
+			extensions: ['', '.js']
 		},
 		devServer:{
 			inline: true,
+			hot: true,
 			port: 3333
 		},
 		module:{
@@ -23,5 +36,5 @@ module.exports = {
 						loader: 'style-loader!css-loader'
 					}
 				]
-		}
+		},
 }
