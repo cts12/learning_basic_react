@@ -1,72 +1,118 @@
 import React from 'react'
 
-export default TodoList extends React.Component {
+export default class TodoList extends React.Component {
 		constructor(){
 				super()
-				this.state = {todos: []}
+				this.state = {todos: [{value: 'eat toast', completed: false}]}
 		}
 
-		update(e){
+		createTodo(task){
 			let new_todo = {
-				value: e.target.value,
+				value: task,
 				completed: false
 			}
-			this.setState({todos: this.state.todos.concat([]})
+			this.setState({todos: this.state.todos.concat([new_todo])})
 		}
+
+		changeTodo(oldtask, newtask){
+			const foundtodo = this.state.todos.find(todo => todo.value === oldtask)
+			foundtodo.value = newtask
+			this.setState({todos: this.state.todos})
+		}
+
+		removeTodo(task){
+			console.log(task)
+			let new_todos = this.state.todos.filter(todo => todo.value !== task)
+			console.log(new_todos)
+			this.setState({todos: new_todos})
+		}
+
 
 		render(){
-				return (
-						<TodoInput update={this.update.bind(this)}/>
-						{this.state.todos.map(todoItem => <TodoItem key={todoItem.name}
-										 							value={todoItem.value}
-																	complete=todoItem.completed/>)}
-					   )
+
+			let tod = this.state.todos.map(todoItem => <TodoItem key={todoItem.value}
+		     				 							value={todoItem.value}
+											  		    complete={todoItem.completed}
+												changeTodo={this.changeTodo.bind(this)}
+												removeTodo={this.removeTodo.bind(this)}
+														/>)
+			return (<div>
+					<TodoInput createTodo={this.createTodo.bind(this)}/>
+					{tod}
+					</div>
+				   )
 		}
-
-
-}
-
-TodoInput extends React.Component {
-
-		handleSubmit(e){
-
-		}
-		
-		
-		render(){  return (<form onSubmit={this.handlSubmit}>
-							<input type="text">
-							 <input type="submit">Add Task</button>
-							 </form>
-							)
-
-				}
 }
 
 
 class TodoItem extends React.Component {
 		constructor(){
-				super()
-				this.state = {
+			super()
+			this.state = {isEditing: false}
+		}
+		editTodo(){
+			this.setState({isEditing: true})
+		}
 
+		cancelEdit(){
+			this.setState({isEditing: false})
+		}
+
+		saveItem(){
+			this.props.changeTodo(this.props.value, this.refs.edited.value)
+		}
+
+		deleteTodo(){
+			this.props.removeTodo(this.props.value)
+		}
+
+		renderAction(){
+				if(this.state.isEditing){
+						return(
+								<div>
+								<input type="text"
+								 defaultValue={this.props.value}
+								 ref="edited"
+								 />
+								<button onClick={this.saveItem.bind(this)}> Save </button>
+								<button onClick={this.cancelEdit.bind(this)}> Cancel </button>	
+								</div>
+							  )
 				}
+
+				return (
+						<div>
+						<div> {this.props.value} </div>
+						<button onClick={this.editTodo.bind(this)}> Edit </button>
+						<button onClick={this.deleteTodo.bind(this)}> Delete </button>	
+						</div>
+					   )
+
 		}
 
-
-		componentWillUnmount(e){
-
-		}
-		
 		render(){
 				return( <div>
-						<div> this.props.value </div>
-						<button onClick={this.componentWillUnmount.bind(this)}>
+						{this.renderAction()}
 						</div>
 					  )
 		}
 
 } 
 
-TodoItem.defaultProps = {
-		color="red"
-		completed = false
+class TodoInput extends React.Component {
+
+		handleCreate(e){
+			e.preventDefault()
+			this.props.createTodo(this.refs.createInput.value)
+			
+		}	
+		render(){	
+					return (
+							<form onSubmit={this.handleCreate.bind(this)}>
+							<input type="text" ref="createInput"/>
+							 <button>Create</button>
+							 </form>
+						  )
+
+				}
 }

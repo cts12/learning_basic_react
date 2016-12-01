@@ -18,8 +18,8 @@ module.exports = {
 		},
 		devServer:{
 			inline: true,
-			hot: true,
-			port: 3333
+			//hot: true,
+			port: 8080
 		},
 		module:{
 				loaders: [
